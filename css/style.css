@@ -26,6 +26,53 @@
   --maxw: 1180px;
 }
 
+/* ==========================================================================
+   LIGHT MODE — token overrides only; every component below already reads
+   from these custom properties, so flipping them re-themes the whole site.
+   ========================================================================== */
+[data-theme="light"]{
+  --black-1:#f8f3e8;
+  --black-2:#f0e8d6;
+  --black-3:#ffffff;
+  --black-4:#e9ddc2;
+  --line:#ddd0ac;
+  --gold-1:#7a5c1c;
+  --gold-2:#96721f;
+  --gold-3:#8a6a22;
+  --gold-4:#c79a3d;
+  --cream:#2a2118;
+  --ivory:#1b160e;
+  --smoke:#6b6152;
+  --red-accent:#8f2626;
+  --shadow-gold: 0 0 0 1px rgba(138,106,34,.2), 0 18px 34px rgba(120,100,60,.16);
+  --grad-gold: linear-gradient(135deg,#7a5c1c 0%,#c79a3d 28%,#96721f 52%,#7a5c1c 78%,#c79a3d 100%);
+  --grad-gold-text: linear-gradient(180deg,#96721f 0%,#7a5c1c 55%,#4a380f 100%);
+}
+[data-theme="light"] .site-header{
+  background:linear-gradient(180deg, rgba(248,243,232,.94), rgba(248,243,232,.75) 70%, transparent);
+}
+[data-theme="light"] .site-header.scrolled{
+  background:rgba(248,243,232,.96);
+}
+[data-theme="light"] .bg-photo-section .bg-photo-overlay{
+  background:linear-gradient(180deg, var(--black-1) 0%, rgba(248,243,232,.8) 35%, rgba(248,243,232,.94) 75%, var(--black-1) 100%);
+}
+[data-theme="light"] .bg-photo-section .bg-photo{opacity:.16;}
+[data-theme="light"] .grain{opacity:.03;}
+[data-theme="light"] .nav-toggle span{background:var(--gold-3);}
+/* the logo artwork is light-coloured for the dark theme; swap to the dark
+   variant on light so it stays legible (CSS content:url avoids any flash —
+   js/main.js also swaps the <img src> as a fallback for older browsers) */
+[data-theme="light"] .brand-logo-img,
+[data-theme="light"] .entry-logo{content:url("assets/photos/logo-real-dark.png");}
+[data-theme="light"] .card:hover,[data-theme="light"] .cta-banner{box-shadow:0 18px 34px rgba(120,100,60,.14);}
+
+body,.site-header,.card,.tier,.loc-card,.cta-banner,footer,.gal-item,.page-header,
+.bg-photo-overlay,.form-field input,.form-field select,.form-field textarea,
+.entry-gate,.entry-card,.prefs-panel,.prefs-toggle{
+  transition:background-color .4s ease,border-color .4s ease,color .4s ease,box-shadow .4s ease;
+}
+
 @font-face{font-family:"Cinzel";src:local("Cinzel");}
 
 *,*::before,*::after{box-sizing:border-box;}
@@ -397,3 +444,140 @@ footer{
 .mt-0{margin-top:0;}
 .text-center{text-align:center;}
 .small{font-size:.82rem;color:var(--smoke);}
+
+/* ==========================================================================
+   ENTRY GATE — smoke intro / 21+ check / theme pick (landing) or a compact
+   21+ check alone (interior pages). Sits in the DOM from first paint so
+   there's zero flash; a tiny inline script (see each page) hides it
+   instantly for returning visitors before anything else renders.
+   ========================================================================== */
+body.gate-locked{overflow:hidden;}
+.entry-gate{
+  position:fixed;inset:0;z-index:99999;
+  background:var(--black-1);
+  overflow:hidden;
+}
+.entry-gate::before{
+  content:"";position:absolute;inset:0;
+  background:radial-gradient(ellipse 70% 55% at 50% 40%, rgba(217,180,92,.12), transparent 65%);
+}
+.entry-gate.is-hiding{animation:gateFadeOut .7s ease forwards;}
+@keyframes gateFadeOut{to{opacity:0;visibility:hidden;}}
+
+.entry-step{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  padding:24px;
+  opacity:0;visibility:hidden;pointer-events:none;
+  transition:opacity .6s ease;
+}
+.entry-step.active{opacity:1;visibility:visible;pointer-events:auto;}
+
+.entry-logo-wrap{display:flex;flex-direction:column;align-items:center;gap:22px;position:relative;z-index:2;}
+.entry-logo{
+  width:min(230px,52vw);height:auto;
+  opacity:0;transform:scale(.82);
+  animation:entryLogoIn 2.3s ease forwards;
+  filter:drop-shadow(0 0 40px rgba(217,180,92,.35));
+}
+.entry-logo-tag{
+  font-family:var(--sans);font-size:.68rem;letter-spacing:.4em;text-transform:uppercase;color:var(--gold-3);
+  opacity:0;animation:entryTagIn 1.4s ease .9s forwards;
+}
+@keyframes entryLogoIn{
+  0%{opacity:0;transform:scale(.8);}
+  40%{opacity:1;transform:scale(1.03);}
+  100%{opacity:1;transform:scale(1);}
+}
+@keyframes entryTagIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+.entry-card{
+  max-width:520px;width:100%;text-align:center;
+  background:linear-gradient(160deg,var(--black-3),var(--black-2));
+  border:1px solid var(--gold-4);border-radius:8px;
+  padding:52px 40px;box-shadow:var(--shadow-gold);
+  position:relative;z-index:2;
+  animation:entryCardIn .6s ease both;
+}
+@keyframes entryCardIn{from{opacity:0;transform:translateY(16px) scale(.98);}to{opacity:1;transform:translateY(0) scale(1);}}
+.entry-card h2{font-size:clamp(1.5rem,4vw,2.2rem);}
+.entry-card p{color:var(--smoke);font-size:.94rem;margin-bottom:0;max-width:400px;margin-left:auto;margin-right:auto;}
+.entry-actions{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-top:32px;}
+
+/* theme-pick step */
+.entry-actions--theme{gap:20px;}
+.theme-choice{
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+  background:transparent;border:1px solid var(--line);border-radius:8px;
+  padding:20px 28px;cursor:pointer;color:var(--cream);
+  font-family:var(--sans);font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;
+  transition:.25s;
+}
+.theme-choice:hover{border-color:var(--gold-3);background:rgba(217,180,92,.08);}
+.theme-swatch{width:44px;height:44px;border-radius:50%;display:block;border:1px solid var(--line);}
+.theme-swatch--dark{background:linear-gradient(160deg,#141210,#060605);}
+.theme-swatch--light{background:linear-gradient(160deg,#ffffff,#efe6d3);}
+
+/* blocked step — the bouncer */
+.entry-step--blocked .entry-card{border-color:var(--red-accent);}
+.entry-step--blocked h2{color:var(--red-accent);}
+.bouncer-wrap{position:relative;width:168px;height:216px;margin:0 auto 6px;}
+.bouncer-glow{
+  position:absolute;inset:-44px;z-index:0;border-radius:50%;
+  background:radial-gradient(circle, rgba(143,38,38,.4), transparent 70%);
+  animation:bouncerPulse 2.2s ease-in-out infinite;
+}
+@keyframes bouncerPulse{0%,100%{opacity:.5;transform:scale(1);}50%{opacity:.95;transform:scale(1.12);}}
+.bouncer-wrap svg{position:relative;z-index:1;width:100%;height:100%;display:block;}
+.bouncer-arm-l{transform-origin:28px 92px;animation:armInLeft .85s cubic-bezier(.2,.8,.3,1) .25s both;}
+.bouncer-arm-r{transform-origin:122px 92px;animation:armInRight .85s cubic-bezier(.2,.8,.3,1) .25s both;}
+@keyframes armInLeft{from{transform:rotate(-75deg) translate(-10px,-14px);}to{transform:rotate(0) translate(0,0);}}
+@keyframes armInRight{from{transform:rotate(75deg) translate(10px,-14px);}to{transform:rotate(0) translate(0,0);}}
+
+/* ==========================================================================
+   PREFERENCES — floating toggle + slide-in panel (theme / language),
+   injected on every page by js/main.js so it's consistent site-wide.
+   ========================================================================== */
+.prefs-toggle{
+  position:fixed;bottom:24px;right:24px;z-index:9000;
+  width:52px;height:52px;border-radius:50%;
+  background:var(--black-3);border:1px solid var(--gold-4);
+  display:flex;align-items:center;justify-content:center;color:var(--gold-2);
+  cursor:pointer;box-shadow:0 10px 24px rgba(0,0,0,.35);transition:.3s;
+}
+.prefs-toggle:hover{border-color:var(--gold-2);transform:translateY(-2px) rotate(35deg);}
+body.menu-open .prefs-toggle{display:none;}
+.prefs-toggle svg{width:22px;height:22px;}
+
+.prefs-overlay{
+  position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.5);
+  opacity:0;visibility:hidden;transition:opacity .3s ease,visibility .3s ease;
+}
+.prefs-overlay.open{opacity:1;visibility:visible;}
+
+.prefs-panel{
+  position:fixed;top:0;right:0;bottom:0;z-index:9001;
+  width:min(320px,86vw);
+  background:var(--black-2);border-left:1px solid var(--line);
+  transform:translateX(100%);transition:transform .4s ease;
+  padding:30px 26px;overflow-y:auto;
+}
+.prefs-panel.open{transform:translateX(0);}
+.prefs-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:34px;}
+.prefs-head span{font-family:var(--display);letter-spacing:.06em;color:var(--gold-1);font-size:1.15rem;}
+.prefs-close{background:none;border:none;color:var(--cream);font-size:1.7rem;line-height:1;cursor:pointer;padding:0;}
+.prefs-row{margin-bottom:30px;}
+.prefs-row label{display:block;font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-3);margin-bottom:12px;}
+.theme-choice-row{display:flex;gap:10px;}
+.theme-choice-row .theme-choice{flex:1;flex-direction:row;padding:12px 8px;gap:8px;font-size:.68rem;}
+.theme-choice-row .theme-choice .theme-swatch{width:20px;height:20px;}
+.theme-choice-row .theme-choice.active{border-color:var(--gold-2);background:rgba(217,180,92,.1);color:var(--gold-1);}
+#prefs-lang{
+  width:100%;background:var(--black-3);border:1px solid var(--line);color:var(--ivory);
+  padding:12px 14px;border-radius:3px;font-family:var(--sans);font-size:.9rem;cursor:pointer;
+}
+.prefs-note{font-size:.72rem;color:var(--smoke);line-height:1.5;padding-top:10px;border-top:1px solid var(--line);}
+
+@media (prefers-reduced-motion: reduce){
+  .entry-logo,.entry-logo-tag,.entry-card,.bouncer-arm-l,.bouncer-arm-r,.bouncer-glow{animation:none;opacity:1;transform:none;}
+}
