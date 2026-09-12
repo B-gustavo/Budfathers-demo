@@ -143,9 +143,8 @@ function applyTheme (theme) {
    page so appearance and language stay one tap away site-wide.
    ========================================================================== */
 function initPreferences () {
-  var storedTheme = 'dark', storedLang = 'en';
+  var storedTheme = 'dark';
   try { storedTheme = localStorage.getItem('bf_theme') || 'dark'; } catch (e) {}
-  try { storedLang = localStorage.getItem('bf_lang') || 'en'; } catch (e) {}
 
   var overlay = document.createElement('div');
   overlay.className = 'prefs-overlay';
@@ -159,28 +158,19 @@ function initPreferences () {
   var panel = document.createElement('div');
   panel.className = 'prefs-panel';
 
-  var names = window.BF_LANG_NAMES || { en: 'English (SA)' };
-  var langOptions = Object.keys(names).map(function (code) {
-    return '<option value="' + code + '">' + names[code] + '</option>';
-  }).join('');
-
   panel.innerHTML =
-    '<div class="prefs-head"><span data-i18n="prefs.title">Preferences</span>' +
+    '<div class="prefs-head"><span>Preferences</span>' +
       '<button type="button" class="prefs-close" aria-label="Close">&times;</button></div>' +
     '<div class="prefs-row">' +
-      '<label data-i18n="prefs.appearance">Appearance</label>' +
+      '<label>Appearance</label>' +
       '<div class="theme-choice-row">' +
         '<button type="button" class="theme-choice" data-theme-choice="dark">' +
-          '<span class="theme-swatch theme-swatch--dark"></span><span data-i18n="prefs.dark">Dark</span></button>' +
+          '<span class="theme-swatch theme-swatch--dark"></span><span>Dark</span></button>' +
         '<button type="button" class="theme-choice" data-theme-choice="light">' +
-          '<span class="theme-swatch theme-swatch--light"></span><span data-i18n="prefs.light">Light</span></button>' +
+          '<span class="theme-swatch theme-swatch--light"></span><span>Light</span></button>' +
       '</div>' +
     '</div>' +
-    '<div class="prefs-row">' +
-      '<label for="prefs-lang" data-i18n="prefs.language">Language</label>' +
-      '<select id="prefs-lang">' + langOptions + '</select>' +
-    '</div>' +
-    '<p class="prefs-note" data-i18n="prefs.note">Your choices are saved on this device for next time.</p>';
+    '<p class="prefs-note">Your choice is saved on this device for next time.</p>';
 
   document.body.appendChild(overlay);
   document.body.appendChild(toggle);
@@ -197,12 +187,5 @@ function initPreferences () {
     btn.addEventListener('click', function () { applyTheme(btn.getAttribute('data-theme-choice')); });
   });
 
-  var langSelect = panel.querySelector('#prefs-lang');
-  langSelect.value = storedLang;
-  langSelect.addEventListener('change', function () {
-    if (window.bfApplyLanguage) window.bfApplyLanguage(langSelect.value);
-  });
-
   applyTheme(storedTheme);
-  if (window.bfApplyLanguage) window.bfApplyLanguage(storedLang);
 }

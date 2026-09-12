@@ -67,7 +67,7 @@
    variant on light so it stays legible (CSS content:url avoids any flash —
    js/main.js also swaps the <img src> as a fallback for older browsers) */
 [data-theme="light"] .brand-logo-img,
-[data-theme="light"] .entry-logo{content:url("assets/photos/logo-real-dark.png");}
+[data-theme="light"] .entry-logo{content:url("../assets/photos/logo-real-dark.png");}
 [data-theme="light"] .card:hover,[data-theme="light"] .cta-banner{box-shadow:0 18px 34px rgba(120,100,60,.14);}
 
 body,.site-header,.card,.tier,.loc-card,.cta-banner,footer,.gal-item,.page-header,
@@ -348,21 +348,40 @@ section{position:relative;z-index:2;padding:110px 0;}
 /* -------- smoke / haze background layer -------- */
 .smoke-layer{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0;}
 .smoke-layer span{
-  position:absolute;border-radius:50%;filter:blur(50px);opacity:.4;
-  background:radial-gradient(circle, rgba(217,180,92,.32), transparent 70%);
-  animation:smokeDrift 24s ease-in-out infinite;
+  position:absolute;
+  border-radius:50%;
+  filter:blur(60px);
+  opacity:.55;
+  background:radial-gradient(ellipse, rgba(232,222,199,.95) 0%, rgba(232,222,199,0) 72%);
+  mix-blend-mode:screen;
+  animation:smokeDrift 27s ease-in-out infinite;
+  will-change:transform;
 }
-.smoke-layer span:nth-child(1){width:360px;height:360px;left:2%;top:55%;animation-duration:23s;}
-.smoke-layer span:nth-child(2){width:280px;height:280px;left:68%;top:15%;animation-duration:28s;animation-delay:-6s;background:radial-gradient(circle, rgba(240,232,210,.14), transparent 70%);}
-.smoke-layer span:nth-child(3){width:440px;height:440px;left:38%;top:75%;animation-duration:33s;animation-delay:-12s;}
-.smoke-layer span:nth-child(4){width:220px;height:220px;left:85%;top:60%;animation-duration:19s;animation-delay:-3s;background:radial-gradient(circle, rgba(240,232,210,.10), transparent 70%);}
+/* wide, low, overlapping ellipses read as a drifting haze bank rather than glowing dots */
+.smoke-layer span:nth-child(1){width:620px;height:210px;left:-8%;top:58%;animation-duration:29s;}
+.smoke-layer span:nth-child(2){width:480px;height:190px;left:30%;top:18%;animation-duration:35s;animation-delay:-9s;opacity:.4;}
+.smoke-layer span:nth-child(3){width:700px;height:250px;left:48%;top:62%;animation-duration:41s;animation-delay:-16s;}
+.smoke-layer span:nth-child(4){width:420px;height:170px;left:74%;top:28%;animation-duration:23s;animation-delay:-5s;opacity:.4;}
 @keyframes smokeDrift{
-  0%{transform:translate(0,0) scale(1);}
-  50%{transform:translate(36px,-70px) scale(1.18);}
-  100%{transform:translate(0,0) scale(1);}
+  0%{transform:translate(0,0) scale(1) rotate(0deg);}
+  50%{transform:translate(70px,-26px) scale(1.2) rotate(3deg);}
+  100%{transform:translate(0,0) scale(1) rotate(0deg);}
 }
 @media (prefers-reduced-motion: reduce){
   .smoke-layer span{animation:none;}
+}
+/* on light backgrounds a pale screen-blend haze all but disappears — switch to a
+   darker gold-brown smoke with a multiply blend so it still reads clearly */
+[data-theme="light"] .smoke-layer span{
+  mix-blend-mode:multiply;
+  background:radial-gradient(ellipse, rgba(122,92,28,.55) 0%, rgba(122,92,28,0) 72%);
+}
+[data-theme="light"] .entry-smoke span,
+[data-theme="light"] .page-transition .smoke-layer span{
+  /* the entry-gate and page-transition always sit on a hardcoded dark
+     backdrop (see .entry-gate / .page-transition), so keep their smoke pale */
+  mix-blend-mode:screen;
+  background:radial-gradient(ellipse, rgba(232,222,199,.95) 0%, rgba(232,222,199,0) 72%);
 }
 
 /* -------- weed-themed background photography -------- */
@@ -458,11 +477,11 @@ footer{
    load / tab change, independent of the one-time entry gate below -------- */
 .page-transition{
   position:fixed;inset:0;z-index:99998;
-  background:var(--black-1);
+  background:#060605; /* always a cinematic dark backdrop, regardless of theme, so the smoke reads clearly every time */
   pointer-events:none;
   animation:pageTransitionOut 1.15s ease forwards;
 }
-.page-transition .smoke-layer span{opacity:.7;}
+.page-transition .smoke-layer span{opacity:.85;filter:blur(46px);}
 @keyframes pageTransitionOut{
   0%{opacity:1;visibility:visible;}
   65%{opacity:1;visibility:visible;}
@@ -475,7 +494,7 @@ footer{
 body.gate-locked{overflow:hidden;}
 .entry-gate{
   position:fixed;inset:0;z-index:99999;
-  background:var(--black-1);
+  background:#060605; /* always a cinematic dark backdrop, regardless of theme, so the smoke reads clearly every time */
   overflow:hidden;
 }
 .entry-gate::before{
@@ -593,10 +612,6 @@ body.menu-open .prefs-toggle{display:none;}
 .theme-choice-row .theme-choice{flex:1;flex-direction:row;padding:12px 8px;gap:8px;font-size:.68rem;}
 .theme-choice-row .theme-choice .theme-swatch{width:20px;height:20px;}
 .theme-choice-row .theme-choice.active{border-color:var(--gold-2);background:rgba(217,180,92,.1);color:var(--gold-1);}
-#prefs-lang{
-  width:100%;background:var(--black-3);border:1px solid var(--line);color:var(--ivory);
-  padding:12px 14px;border-radius:3px;font-family:var(--sans);font-size:.9rem;cursor:pointer;
-}
 .prefs-note{font-size:.72rem;color:var(--smoke);line-height:1.5;padding-top:10px;border-top:1px solid var(--line);}
 
 @media (prefers-reduced-motion: reduce){
